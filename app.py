@@ -26,10 +26,11 @@ def generate_with_retry(prompt, max_retries=3, delay=2):
         try:
             print(f"\nAttempt {attempt + 1} for prompt: {prompt}")
             response = openai.Image.create(
-                model="black-forest-labs/FLUX.1-schnell-Free",
+                model="black-forest-labs/FLUX.1.1-pro",
                 prompt=prompt,
                 n=1,
-                size="1024x1024"
+                size="1440x1440",
+                steps=4
             )
             print(f"Success! Response: {json.dumps(response, indent=2)}")
             return response

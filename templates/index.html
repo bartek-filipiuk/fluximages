@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator - FLUX 1.1 Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .image-container {
+            max-width: 512px;
+            margin: 20px auto;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        #error {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Image Generator</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form id="generateForm" class="mb-4">
+                    <div class="mb-3">
+                        <label for="prompt" class="form-label">Enter your prompt:</label>
+                        <textarea class="form-control" id="prompt" name="prompt" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Generate Image</button>
+                </form>
+                <div id="loading" class="text-center d-none">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Generating image... This may take up to 30 seconds.</p>
+                </div>
+                <div id="imageContainer" class="image-container"></div>
+                <div id="error" class="alert alert-danger d-none"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = document.getElementById('prompt').value;
+            const loading = document.getElementById('loading');
+            const imageContainer = document.getElementById('imageContainer');
+            const error = document.getElementById('error');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            loading.classList.remove('d-none');
+            imageContainer.innerHTML = '';
+            error.classList.add('d-none');
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        prompt: prompt
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`Server error (${response.status}): ${data.error || 'Unknown error'}`);
+                }
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                const img = document.createElement('img');
+                img.src = data.image_url;
+                img.alt = prompt;
+                img.className = 'img-fluid';
+                imageContainer.appendChild(img);
+            } catch (err) {
+                console.error('Generation error:', err);
+                error.textContent = `Error: ${err.message}\n\nIf the error persists, try refreshing the page or using a different prompt.`;
+                error.classList.remove('d-none');
+            } finally {
+                loading.classList.add('d-none');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

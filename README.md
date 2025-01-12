@@ -1,12 +1,13 @@
-# Pokemon Image Generator
+# Image Generator
 
-A simple web application that generates Pokemon coloring book style images using the Together AI FLUX model.
+A simple web application that generates images using the Together AI FLUX model.
 
 ## Features
 - Generate black and white Pokemon illustrations perfect for coloring
 - Simple and intuitive web interface
 - Real-time image generation
 - Error handling with automatic retries
+- Configurable image generation parameters
 
 ## Installation
 
@@ -48,11 +49,38 @@ A simple web application that generates Pokemon coloring book style images using
    - Enter a description of the Pokemon you want to generate
    - Click the "Generate Image" button
 
+## Model Configuration
+
+You can customize the image generation by modifying the following parameters in `app.py`:
+
+```python
+response = openai.Image.create(
+    model="black-forest-labs/FLUX.1-schnell-Free",  # Model name
+    prompt=prompt,                                  # Your text prompt
+    n=1,                                           # Number of images to generate
+    size="1024x1024"                               # Image resolution
+)
+```
+
+Available parameters:
+- `model`: Choose between different FLUX models
+  - `black-forest-labs/FLUX.1-schnell-Free` (Free version)
+  - `black-forest-labs/FLUX.1.1-pro` (Pro version)
+- `size`: Image resolution options, depends on the model
+  - `"1440x1440"`
+  - `"1024x1024"`
+  - `"512x512"`
+  - `"256x256"`
+  - "`and combinations of these`"
+- `n`: Number of images to generate (1-4)
+- `steps`: Number of steps for image generation (1-4)
+
 ## Important Notes
 - Make sure you have Python 3.x installed
 - Keep your API key private and never share it publicly
 - The application requires an internet connection to generate images
 - If you encounter any issues, verify that all packages are installed correctly
+- Different models may have different capabilities and generation speeds
 
 ## Dependencies
 - Flask
